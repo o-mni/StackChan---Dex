@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420" width="1280" height="420" role="img" aria-labelledby="t d">
+  <title id="t">Dex</title>
+  <desc id="d">Dex, an open-source desk robot built on Stack-chan, telling its owner a new device joined their Wi-Fi.</desc>
+  <style>
+    .f { font-family: 'Segoe UI', 'Helvetica Neue', Ubuntu, Arial, sans-serif; }
+  </style>
+  <rect width="1280" height="420" rx="28" fill="#EEF2F7"/>
+
+  <text class="f" x="80" y="200" font-size="150" font-weight="800" fill="#14213D" letter-spacing="-6">Dex</text>
+  <text class="f" x="84" y="262" font-size="28" font-weight="600" fill="#14213D">Life assistant. Security sidekick. Desk buddy.</text>
+  <text class="f" x="84" y="306" font-size="21" fill="#5C6B82">An open-source robot built on Stack-chan.</text>
+  <text class="f" x="84" y="336" font-size="21" fill="#5C6B82">Runs on Mistral today, fully local tomorrow.</text>
+
+  <g>
+    <rect x="520" y="52" width="340" height="86" rx="20" fill="#FFFFFF" stroke="#14213D" stroke-width="2.5"/>
+    <path d="M858 92 L892 104 L858 116" fill="#FFFFFF" stroke="#14213D" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="852" y="94" width="8" height="20" fill="#FFFFFF"/>
+    <text class="f" x="544" y="89" font-size="18" fill="#14213D">Morning! A new device joined</text>
+    <text class="f" x="544" y="115" font-size="18" fill="#14213D">your Wi-Fi at 3:12 AM. <tspan fill="#0E9AA7" font-weight="700">Check it?</tspan></text>
+  </g>
+
+  <g transform="rotate(-3 1030 320)">
+    <rect x="936" y="306" width="188" height="52" rx="16" fill="#FFFFFF" stroke="#14213D" stroke-width="3"/>
+    <rect x="956" y="356" width="44" height="14" rx="5" fill="#14213D"/>
+    <rect x="1060" y="356" width="44" height="14" rx="5" fill="#14213D"/>
+    <rect x="890" y="66" width="280" height="240" rx="40" fill="#FFFFFF" stroke="#14213D" stroke-width="3"/>
+    <rect x="914" y="90" width="232" height="192" rx="22" fill="#14213D"/>
+    <rect x="970" y="146" width="30" height="56" rx="15" fill="#3FD0DB"/>
+    <rect x="1060" y="146" width="30" height="56" rx="15" fill="#3FD0DB"/>
+    <circle cx="950" cy="222" r="10" fill="#F2A541" opacity="0.85"/>
+    <circle cx="1110" cy="222" r="10" fill="#F2A541" opacity="0.85"/>
+    <path d="M1004 232 Q1030 254 1056 232" fill="none" stroke="#3FD0DB" stroke-width="7" stroke-linecap="round"/>
+    <g transform="translate(1142 46)">
+      <path d="M26 0 L50 9 V28 C50 44 40 54 26 60 C12 54 2 44 2 28 V9 Z" fill="#5B4BDB" stroke="#14213D" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M15 30 L23 38 L38 22" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

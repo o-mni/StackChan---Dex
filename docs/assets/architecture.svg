@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 740" width="1280" height="740" role="img" aria-labelledby="t d">
+  <title id="t">Dex architecture</title>
+  <desc id="d">The Dex robot and your phone connect to a home server running the voice gateway, Dex core, companion app, memory and skills. Dex core calls a swappable LLM backend: Mistral API now, Ollama later.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#14213D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <style>
+    .f { font-family: 'Segoe UI', 'Helvetica Neue', Ubuntu, Arial, sans-serif; }
+    .h { font-size: 22px; font-weight: 700; fill: #14213D; }
+    .s { font-size: 16px; fill: #5C6B82; }
+    .hw { font-size: 22px; font-weight: 700; fill: #FFFFFF; }
+    .sw { font-size: 16px; fill: #B9C3D6; }
+    .lbl { font-size: 17px; font-weight: 700; fill: #5C6B82; }
+    .ln { stroke: #14213D; stroke-width: 2; fill: none; }
+  </style>
+  <rect width="1280" height="740" rx="28" fill="#EEF2F7"/>
+
+  <rect x="310" y="60" width="660" height="590" rx="26" fill="none" stroke="#8A97AD" stroke-width="2" stroke-dasharray="8 7"/>
+  <text class="f lbl" x="336" y="96">Home server (Docker)</text>
+
+  <rect x="1000" y="190" width="240" height="340" rx="26" fill="none" stroke="#8A97AD" stroke-width="2" stroke-dasharray="8 7"/>
+  <text class="f lbl" x="1024" y="226">LLM backend</text>
+
+  <g class="f">
+    <rect x="40" y="130" width="220" height="110" rx="20" fill="#FFFFFF" stroke="#14213D" stroke-width="2.5"/>
+    <text class="h" x="150" y="178" text-anchor="middle">Dex robot</text>
+    <text class="s" x="150" y="206" text-anchor="middle">Stack-chan on CoreS3</text>
+
+    <rect x="40" y="490" width="220" height="110" rx="20" fill="#FFFFFF" stroke="#14213D" stroke-width="2.5"/>
+    <text class="h" x="150" y="538" text-anchor="middle">Your phone</text>
+    <text class="s" x="150" y="566" text-anchor="middle">Samsung, iPhone, PC</text>
+
+    <rect x="350" y="130" width="580" height="110" rx="20" fill="#DDF3F5" stroke="#0E9AA7" stroke-width="2.5"/>
+    <text class="h" x="640" y="178" text-anchor="middle">Voice gateway</text>
+    <text class="s" x="640" y="206" text-anchor="middle">xiaozhi-esp32-server: wake word, speech-to-text, text-to-speech</text>
+
+    <rect x="350" y="300" width="580" height="120" rx="20" fill="#14213D"/>
+    <text class="hw" x="640" y="350" text-anchor="middle">Dex core</text>
+    <text class="sw" x="640" y="380" text-anchor="middle">Persona, privacy router, tool router, confirmations</text>
+
+    <rect x="350" y="490" width="176" height="110" rx="20" fill="#DDF3F5" stroke="#0E9AA7" stroke-width="2.5"/>
+    <text class="h" x="438" y="538" text-anchor="middle">Web app</text>
+    <text class="s" x="438" y="566" text-anchor="middle">Wizard + dashboard</text>
+
+    <rect x="552" y="490" width="176" height="110" rx="20" fill="#DDF3F5" stroke="#0E9AA7" stroke-width="2.5"/>
+    <text class="h" x="640" y="538" text-anchor="middle">Memory</text>
+    <text class="s" x="640" y="566" text-anchor="middle">SQLite + vectors</text>
+
+    <rect x="754" y="490" width="176" height="110" rx="20" fill="#DDF3F5" stroke="#0E9AA7" stroke-width="2.5"/>
+    <text class="h" x="842" y="538" text-anchor="middle">Skills</text>
+    <text class="s" x="842" y="566" text-anchor="middle">Life + security</text>
+
+    <rect x="1030" y="250" width="180" height="110" rx="20" fill="#FDEBCF" stroke="#D98A1C" stroke-width="2.5"/>
+    <text class="h" x="1120" y="298" text-anchor="middle">Mistral API</text>
+    <text class="s" x="1120" y="326" text-anchor="middle">Cloud, today</text>
+
+    <rect x="1030" y="400" width="180" height="110" rx="20" fill="#DDF3F5" stroke="#0E9AA7" stroke-width="2.5"/>
+    <text class="h" x="1120" y="448" text-anchor="middle">Ollama</text>
+    <text class="s" x="1120" y="476" text-anchor="middle">Local, later</text>
+  </g>
+
+  <line class="ln" x1="260" y1="185" x2="344" y2="185" marker-end="url(#a)"/>
+  <line class="ln" x1="260" y1="545" x2="344" y2="545" marker-end="url(#a)"/>
+  <line class="ln" x1="640" y1="240" x2="640" y2="294" marker-end="url(#a)"/>
+  <line class="ln" x1="438" y1="420" x2="438" y2="484" marker-end="url(#a)"/>
+  <line class="ln" x1="640" y1="420" x2="640" y2="484" marker-end="url(#a)"/>
+  <line class="ln" x1="842" y1="420" x2="842" y2="484" marker-end="url(#a)"/>
+  <path class="ln" d="M930 360 H985 M985 305 V455"/>
+  <path class="ln" d="M985 305 H1024" marker-end="url(#a)" stroke-dasharray="6 5"/>
+  <path class="ln" d="M985 455 H1024" marker-end="url(#a)"/>
+
+  <g class="f">
+    <rect x="40" y="682" width="22" height="22" rx="6" fill="#DDF3F5" stroke="#0E9AA7" stroke-width="2"/>
+    <text class="s" x="72" y="699">Stays on your network</text>
+    <rect x="280" y="682" width="22" height="22" rx="6" fill="#FDEBCF" stroke="#D98A1C" stroke-width="2"/>
+    <text class="s" x="312" y="699">Leaves your network (non-sensitive requests only)</text>
+    <line x1="750" y1="693" x2="790" y2="693" stroke="#14213D" stroke-width="2" stroke-dasharray="6 5"/>
+    <text class="s" x="802" y="699">Filtered by the privacy router</text>
+  </g>
+</svg>
