@@ -26,7 +26,7 @@
 
 Dex is an open-source desk robot that tries to be three things at once: a friend who remembers your day, an assistant that keeps your life organized, and a security sidekick that keeps an eye on your home network.
 
-It's built on [Stack-chan](https://github.com/stack-chan/stack-chan), the open-source M5Stack CoreS3 robot. The robot itself stays simple: it listens, talks, moves its head and shows a face. Everything clever happens on a small home server you own, which means you decide where your data goes. Dex starts on Mistral's free API and is designed from day one to move to a fully local model with a single config change.
+It's built on [Stack-chan](https://github.com/stack-chan/stack-chan), the open-source M5Stack CoreS3 robot, and also runs as a phone app — the same brain, memory and skills, whichever body you're talking to. Each body stays simple: it listens, talks and shows a face; the robot also moves its head. Everything clever happens on a small home server you own, which means you decide where your data goes. Dex starts on Mistral's free API and is designed from day one to move to a fully local model with a single config change.
 
 ## Features
 
@@ -54,6 +54,10 @@ Dex follows a **thin robot, smart server** design. The robot never talks to an A
 - **Web app.** The setup wizard and dashboard, served by your own server and usable from any phone or browser.
 - **LLM backend.** Any OpenAI-compatible endpoint. Today that's the Mistral API; later it's Ollama on local hardware.
 
+### One brain, many bodies
+
+Dex's personality, memory and skills all live on the server. The robot and the phone app are just bodies — either one can connect to the same brain, and neither is required to use the other. This is a hard rule for the project: **never store identity or memory in firmware.** If a robot is lost, stolen or bricked, nothing about you leaves with it, and a new body picks up the exact same Dex the moment it connects to your server.
+
 ### The privacy router
 
 Mistral's free tier may use API requests to improve its models, so Dex never sends it anything sensitive. Every request is classified before it leaves Dex core:
@@ -75,7 +79,7 @@ Sensitive categories are defined in `dex.yaml` and can only be made stricter fro
 ## Roadmap
 
 <p align="center">
-  <img src="docs/assets/roadmap.svg" alt="Dex roadmap: six phases from foundation to fully local" width="100%">
+  <img src="docs/assets/roadmap.svg" alt="Dex roadmap: ten phases from foundation to machine control" width="100%">
 </p>
 
 <details open>
@@ -88,25 +92,34 @@ Sensitive categories are defined in `dex.yaml` and can only be made stricter fro
 </details>
 
 <details>
-<summary><b>Phase 1: Voice and brain</b></summary>
+<summary><b>Phase 1: Server and voice</b></summary>
 
-- [ ] Run xiaozhi-esp32-server locally and point the robot at it
-- [ ] Connect the Mistral API through the OpenAI-compatible endpoint
-- [ ] Local speech-to-text (Whisper or SenseVoice) and text-to-speech (Piper)
-- [ ] First version of Dex's persona prompt and mood-to-face mapping
+- [ ] Run xiaozhi-esp32-server locally and point the robot at a self-hosted OTA URL, never the vendor's
+- [ ] Local speech-to-text with Whisper
+- [ ] Local text-to-speech with Piper
+- [ ] Confirm audio round-trips entirely inside the home network
 </details>
 
 <details>
-<summary><b>Phase 2: Memory</b></summary>
+<summary><b>Phase 2: Brain and API</b></summary>
+
+- [ ] Dex core exposes an OpenAI-compatible endpoint that the voice gateway talks to
+- [ ] First version of Dex's persona prompt and mood-to-face mapping
+- [ ] Privacy router sits in front of every LLM call
+- [ ] Mistral wired in behind the router, provider swappable with one line in `dex.yaml`
+</details>
+
+<details>
+<summary><b>Phase 3: Memory and tasks</b></summary>
 
 - [ ] Conversation log in SQLite
 - [ ] Local embeddings (for example `nomic-embed-text`) and a vector index on the SSD
-- [ ] Retrieval of relevant memories before each reply
-- [ ] "Forget that" command and a memory viewer in the web app
+- [ ] Reminders and to-dos, stored in SQLite
+- [ ] CSV import and export for reminders and to-dos (CSV is a transfer format only, never the store)
 </details>
 
 <details>
-<summary><b>Phase 3: Skills</b></summary>
+<summary><b>Phase 4: Skills</b></summary>
 
 - [ ] Life: reminders, timers, calendar, weather, morning briefing
 - [ ] Security: new-device alerts, CVE digest from the CISA KEV catalog, certificate checks
@@ -115,21 +128,46 @@ Sensitive categories are defined in `dex.yaml` and can only be made stricter fro
 </details>
 
 <details>
-<summary><b>Phase 4: Companion app and setup wizard</b></summary>
+<summary><b>Phase 5: App and second body</b></summary>
 
-- [ ] Browser-based firmware installer
-- [ ] Six-step setup wizard as an installable web app (PWA)
-- [ ] Dashboard for memory, skills, privacy settings and logs
-- [ ] Optional Android and iOS builds from the same codebase
+- [ ] PWA with Dex's face, microphone input and a WebSocket connection to Dex core
+- [ ] Same brain, same memory, whichever body you're talking to
+- [ ] WireGuard or Tailscale for remote access to the home server
+- [ ] Single-user only; accounts come in the next phase
 </details>
 
 <details>
-<summary><b>Phase 5: Fully local</b></summary>
+<summary><b>Phase 6: Multi-user and hardening</b></summary>
+
+- [ ] Authentication in front of the app and the API
+- [ ] Per-user memory isolation
+- [ ] Per-user privacy settings
+- [ ] Rate limiting and audit logging
+</details>
+
+<details>
+<summary><b>Phase 7: Smart home</b></summary>
+
+- [ ] Home Assistant integration using scoped tokens
+- [ ] Confirmation required before any state-changing action (lights, locks, plugs)
+- [ ] Read-only status queries need no confirmation
+</details>
+
+<details>
+<summary><b>Phase 8: Fully local</b></summary>
 
 - [ ] Ollama on a GPU-equipped server
 - [ ] Mistral open-weight models so Dex keeps a familiar personality
 - [ ] Zero-cloud mode that blocks all outbound LLM traffic
-- [ ] Optional cloud fallback for non-sensitive, heavy questions
+</details>
+
+<details>
+<summary><b>Phase 9: Machine control</b></summary>
+
+- [ ] Disposable Linux VM that Dex can control, reverted between sessions
+- [ ] Strict allowlist of commands; no raw shell access
+- [ ] Physical confirmation required before every command runs
+- [ ] Full audit log of everything the VM executed
 </details>
 
 ## Hardware
@@ -137,9 +175,12 @@ Sensitive categories are defined in `dex.yaml` and can only be made stricter fro
 | Part | Minimum | Recommended | Notes |
 | :-- | :-- | :-- | :-- |
 | Robot | M5Stack CoreS3 with Stack-chan body | Official M5StackChan kit | Needs a 2.4 GHz Wi-Fi network |
-| Home server (phases 0 to 4) | Any 64-bit Linux box with 8 GB RAM | 16 GB RAM, quad-core CPU | A mini PC is plenty for voice and Dex core |
+| Home server (phases 0 to 7) | Any 64-bit Linux box with 8 GB RAM | 16 GB RAM, quad-core CPU | A mini PC is plenty for voice and Dex core |
 | Storage | 64 GB SSD | 100 to 200 GB SSD | Memory, vector index, logs and cached answers |
-| Local LLM (phase 5) | GPU with 8 GB VRAM | GPU with 12 GB+ VRAM | Or a machine with large unified memory |
+| Local LLM (phase 8) | GPU with 8 GB VRAM | GPU with 12 GB+ VRAM | Or a machine with large unified memory |
+
+> [!NOTE]
+> The robot always needs a network path back to your server — it has no brain of its own. Taking it away from home means carrying a travel router that runs WireGuard so it can reach your server remotely. If you need Dex on the go, the phone app is the recommended body.
 
 ## Software stack
 
@@ -207,7 +248,7 @@ llm:
     local:
       base_url: http://ollama:11434/v1
       model: ministral            # any model you have pulled
-      enabled: false              # flip to true in phase 5
+      enabled: false              # flip to true in phase 8
 
 privacy:
   local_only:                     # never sent to a cloud provider
@@ -238,9 +279,12 @@ Dex has a microphone, knows a lot about you and can run tools, so it's treated a
 | Robot used as a pivot into the home network | Robot sits on its own VLAN and can only reach the voice gateway port. |
 | Server exposed to the internet | No port forwarding. Remote access only through WireGuard or Tailscale. |
 | Prompt injection from web pages, feeds or emails | Tools are allowlisted and read-only by default. State-changing actions need a physical head-touch. |
-| Sensitive data sent to a cloud model | Privacy router enforces local-only categories. Zero-cloud mode in phase 5. |
+| Sensitive data sent to a cloud model | Privacy router enforces local-only categories. Zero-cloud mode in phase 8. |
 | Always-on microphone | Wake word gating, a visible LED while streaming, and a mute option. |
 | Unauthorized network scanning | Network skills only run against subnets listed in `dex.yaml` that you own. |
+| LLM given command execution | Allowlisted commands only, no raw shell, a disposable VM, physical confirmation per command, and only available when a local model is in use. |
+| Multi-user data leakage | Per-user memory isolation, with authentication required before any account beyond the owner can be created. |
+| Automatic firmware OTA from vendor | Vendor update checks are disabled in custom firmware builds; updates come only from the self-hosted OTA URL. |
 
 Found a vulnerability? Please report it privately as described in [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
