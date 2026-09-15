@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img alt="License: Apache 2.0" src="https://img.shields.io/badge/license-Apache%202.0-0E9AA7?style=flat-square"></a>
-  <img alt="Status: early development" src="https://img.shields.io/badge/status-phase%200-F2A541?style=flat-square">
+  <a href="LICENSE"><img alt="License: GPL v3.0" src="https://img.shields.io/badge/license-GPLv3-0E9AA7?style=flat-square"></a>
+  <img alt="Status: early development" src="https://img.shields.io/badge/status-early%20development-F2A541?style=flat-square">
   <img alt="Hardware: M5Stack CoreS3" src="https://img.shields.io/badge/hardware-M5Stack%20CoreS3-14213D?style=flat-square">
   <img alt="LLM: Mistral (EU) or Ollama" src="https://img.shields.io/badge/LLM-Mistral%20(EU)%20%7C%20Ollama-5B4BDB?style=flat-square">
   <img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-0E9AA7?style=flat-square">
@@ -14,14 +14,12 @@
   <a href="#what-is-dex">About</a> |
   <a href="#privacy-and-security">Privacy &amp; security</a> |
   <a href="#how-it-works">How it works</a> |
-  <a href="#roadmap">Roadmap</a> |
   <a href="#setup-wizard-and-companion-app">Setup wizard</a> |
-  <a href="#choosing-a-brain">Choosing a brain</a> |
-  <a href="#contributing">Contributing</a>
+  <a href="#choosing-a-brain">Choosing a brain</a>
 </p>
 
 > [!NOTE]
-> Dex is in early development. Anything marked **planned** below describes where the project is headed, not what works today. Follow the [roadmap](#roadmap) to see progress.
+> Dex is in early development. Most of what's described below is the direction the project is headed, not something that works yet.
 
 ## What is Dex
 
@@ -55,6 +53,9 @@ flowchart LR
 
 Sensitive categories are defined in `dex.yaml` and can only be made stricter from the web app, never looser, without re-authenticating.
 
+> [!WARNING]
+> Do not expose the Dex server to the internet by forwarding its ports on your router — that puts a microphone, your personal memory and your home network data within reach of anyone who finds the open port. Use [Tailscale](https://tailscale.com/) for remote access instead.
+
 | Risk | Mitigation |
 | :-- | :-- |
 | API key extracted from the robot | Keys live only on the server in `.env`. The robot holds no secrets beyond Wi-Fi. |
@@ -63,7 +64,7 @@ Sensitive categories are defined in `dex.yaml` and can only be made stricter fro
 | Robot used as a pivot into the home network | Robot sits on its own VLAN and can only reach the voice gateway port. |
 | Server exposed to the internet | No port forwarding. Remote access only through Tailscale or WireGuard. |
 | Prompt injection from web pages, feeds or emails | Tools are allowlisted and read-only by default. State-changing actions need a physical head-touch. |
-| Sensitive data sent to a cloud model | Privacy router enforces local-only categories. Zero-cloud mode in phase 8. |
+| Sensitive data sent to a cloud model | Privacy router enforces local-only categories. Zero-cloud mode available once running fully local. |
 | Always-on microphone | Wake word gating, a visible LED while streaming, and a mute option. |
 | Unauthorized network scanning | Network skills only run against subnets listed in `dex.yaml` that you own. |
 | LLM given command execution | Allowlisted commands only, no raw shell, a disposable VM, physical confirmation per command, local model only. |
@@ -100,103 +101,7 @@ Thin robot, smart server. The robot never talks to an AI provider directly.
 
 Identity and memory live only on the server, never in firmware. Lose the robot, lose nothing — a new body reconnects to the same Dex.
 
-## Roadmap
-
-<details open>
-<summary><b>Phase 0: Foundation</b></summary>
-
-- [ ] Flash and test the Stack-chan firmware on the CoreS3
-- [ ] Set up a Linux home server with Docker
-- [ ] Put the robot on an isolated IoT VLAN that can only reach the voice gateway
-- [ ] Create the repository structure, license and security policy
-</details>
-
-<details>
-<summary><b>Phase 1: Server and voice</b></summary>
-
-- [ ] Run xiaozhi-esp32-server locally and point the robot at a self-hosted OTA URL, never the vendor's
-- [ ] Local speech-to-text with Whisper
-- [ ] Local text-to-speech with Piper
-- [ ] Confirm audio round-trips entirely inside the home network
-</details>
-
-<details>
-<summary><b>Phase 2: Brain and API</b></summary>
-
-- [ ] Dex core exposes an OpenAI-compatible endpoint that the voice gateway talks to
-- [ ] First version of Dex's persona prompt and mood-to-face mapping
-- [ ] Privacy router sits in front of every LLM call
-- [ ] Mistral wired in behind the router, provider swappable with one line in `dex.yaml`
-</details>
-
-<details>
-<summary><b>Phase 3: Memory and tasks</b></summary>
-
-- [ ] Conversation log in SQLite
-- [ ] Local embeddings (for example `nomic-embed-text`) and a vector index on the SSD
-- [ ] Reminders and to-dos, stored in SQLite
-- [ ] CSV import and export for reminders and to-dos (CSV is a transfer format only, never the store)
-</details>
-
-<details>
-<summary><b>Phase 4: Skills</b></summary>
-
-- [ ] Life: reminders, timers, calendar, weather, morning briefing
-- [ ] Security: new-device alerts, CVE digest from the CISA KEV catalog, certificate checks
-- [ ] Tool allowlist with read-only defaults
-- [ ] Head-touch confirmation for any action that changes something
-</details>
-
-<details>
-<summary><b>Phase 5: App and second body</b></summary>
-
-- [ ] PWA with Dex's face, microphone input and a WebSocket connection to Dex core
-- [ ] Same brain, same memory, whichever body you're talking to
-- [ ] WireGuard or Tailscale for remote access to the home server
-- [ ] Single-user only; accounts come in the next phase
-</details>
-
-<details>
-<summary><b>Phase 6: Hardening and shared use</b></summary>
-
-Each user runs their own server — this hardens a single install, not a multi-tenant service.
-
-- [ ] One owner per install by default, with authentication in front of the app and the API
-- [ ] Optional extra accounts for household members
-- [ ] Invite codes only; open signup is never supported
-- [ ] Per-user memory isolation enforced at the database layer
-- [ ] Per-user privacy settings
-- [ ] Rate limiting and audit logging
-</details>
-
-<details>
-<summary><b>Phase 7: Smart home</b></summary>
-
-- [ ] Home Assistant integration using scoped tokens
-- [ ] Confirmation required before any state-changing action (lights, locks, plugs)
-- [ ] Read-only status queries need no confirmation
-</details>
-
-<details>
-<summary><b>Phase 8: Fully local</b></summary>
-
-- [ ] Ollama on a GPU-equipped server
-- [ ] Mistral open-weight models so Dex keeps a familiar personality
-- [ ] Zero-cloud mode that blocks all outbound LLM traffic
-</details>
-
-<details>
-<summary><b>Phase 9: Machine control</b></summary>
-
-- [ ] Disposable Linux VM that Dex can control, reverted between sessions
-- [ ] Strict allowlist of commands; no raw shell access
-- [ ] Physical confirmation required before every command runs
-- [ ] Full audit log of everything the VM executed
-</details>
-
 ## Hardware
-
-### Required
 
 | Part | What it does | Estimated price | Notes |
 | :-- | :-- | :-- | :-- |
@@ -204,24 +109,8 @@ Each user runs their own server — this hardens a single install, not a multi-t
 | Home server | Runs the voice gateway, Dex core and memory | €0-150 | Free if you already have a Linux box, NAS or Proxmox host; a used mini PC with 16 GB RAM covers it otherwise |
 | Storage | Memory, vector index, logs | €0-25 | 64 GB minimum, 100 to 200 GB comfortable |
 
-### Optional
-
-| Part | What it does | Estimated price | Notes |
-| :-- | :-- | :-- | :-- |
-| M5Stack CoreS3 (alone) | Core board for building your own Stack-chan body | €60-70 | Alternative to the full kit above |
-| Travel router (for example GL.iNet) | Lets the robot reach your server away from home | €50-80 | Only needed if you carry the robot; the phone app needs nothing |
-| GPU for local models (Phase 8) | Runs a local LLM | €250+ | 8 GB VRAM minimum, 12 GB+ recommended |
-
-### Running costs
-
-| Part | What it does | Estimated price | Notes |
-| :-- | :-- | :-- | :-- |
-| LLM API | Ongoing usage for every conversation | €0 | Mistral's free tier; a few euros a month on paid providers |
-| Electricity | Powers the home server | €15-30/year | For a mini PC running continuously |
-| Everything else | Speech-to-text and text-to-speech | €0 | Runs locally, no per-use fee |
-
 > [!NOTE]
-> Prices are rough estimates in EUR (September 2026) and vary by region and retailer — check before buying. A realistic minimum if you already own a server is the kit alone. Works well on a virtualization host: an LXC container with 2 cores, 4 GB RAM and 32 GB disk is enough for one user. Avoid running speech-to-text on a rented VPS — it saves little over a used mini PC and sends your voice off-site.
+> Prices are rough estimates in EUR (September 2026) and vary by region and retailer — check before buying. A realistic minimum if you already own a server is the kit alone. Works well on a virtualization host: an LXC container with 2 cores, 4 GB RAM and 32 GB disk is enough for one user.
 
 > [!NOTE]
 > The robot always needs a network path back to your server. For remote access, [Tailscale](https://tailscale.com/) is recommended — no public IP needed, works behind CGNAT. Plain WireGuard also works but needs a public IP or a small VPS relay. The phone app connects to either directly and is the recommended body for Dex on the go; taking the robot itself off-site needs a travel router (for example GL.iNet) to hold the tunnel.
@@ -246,30 +135,6 @@ First-run configuration, not account creation — runs once, after you clone the
 - Dex's own app replaces M5Stack's StackChan World app: no vendor account, no default cloud service, no reported Android login issues.
 - Ships as a PWA: installs from the browser on Samsung, other Android and iPhone, no app store, same server as Dex core.
 
-## Quick start
-
-> [!WARNING]
-> Do not expose the Dex server to the internet by forwarding its ports on your router — this is not a supported setup. It would put a microphone, your personal memory and your home network data within reach of anyone who finds the open port. Use [Tailscale](https://tailscale.com/) for remote access instead (see [Hardware](#hardware) above).
-
-> [!IMPORTANT]
-> This is the **planned** setup flow. Commands will work once Phase 1 is complete.
-
-```bash
-# 1. Clone the repository on your home server
-git clone https://github.com/YOUR-USERNAME/dex.git
-cd dex/server
-
-# 2. Create your config and add secrets (never commit this file)
-cp dex.example.yaml dex.yaml
-cp .env.example .env        # MISTRAL_API_KEY goes here
-
-# 3. Start the voice gateway, Dex core and web app
-docker compose up -d
-
-# 4. Open the setup wizard from any device on your network
-#    https://dex.local:8443
-```
-
 ## Configuration
 
 Dex core reads a single `dex.yaml`. A trimmed example:
@@ -290,7 +155,7 @@ llm:
     local:
       base_url: http://ollama:11434/v1
       model: ministral            # any model you have pulled
-      enabled: false              # flip to true in phase 8
+      enabled: false              # flip to true once running fully local
 
 privacy:
   local_only:                     # never sent to a cloud provider
@@ -336,16 +201,6 @@ dex/
     └── assets/        # Diagrams and graphics
 ```
 
-## Contributing
-
-Contributions are welcome, whether that's code, a new skill, a translation, a better face animation or a bug report.
-
-1. Fork the repository and create a branch: `git checkout -b feature/my-skill`
-2. Keep changes focused and add tests for anything in `server/core`
-3. New skills must declare their permissions and whether they can run locally
-4. Open a pull request describing what changed and why
-
-
 ## Acknowledgements
 
 Dex stands on the shoulders of these projects: [Stack-chan](https://github.com/stack-chan/stack-chan) by Shinya Ishikawa and the community, [M5Stack](https://github.com/m5stack/StackChan), [xiaozhi-esp32-server](https://github.com/xinnan-tech/xiaozhi-esp32-server), [Mistral AI](https://mistral.ai/), [Ollama](https://ollama.com/), [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and [Piper](https://github.com/rhasspy/piper). Thanks also to community projects like [dotty-stackchan](https://github.com/BrettKinny/dotty-stackchan), which showed that a fully self-hosted Stack-chan is possible.
@@ -354,7 +209,7 @@ Dex is an independent project and is not affiliated with M5Stack, the Stack-chan
 
 ## License
 
-Dex is released under the [Apache License 2.0](LICENSE). Third-party components keep their own licenses; check each upstream project before redistributing.
+Dex is released under the [GNU General Public License v3.0](LICENSE): free to use, study, modify and redistribute, including commercially, as long as derivative works stay open source under the same license and credit the original project. Third-party components keep their own licenses; check each upstream project before redistributing.
 
 <p align="center">
   <sub>Built with care, curiosity and a healthy amount of paranoia.</sub>
