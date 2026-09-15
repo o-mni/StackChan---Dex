@@ -15,6 +15,7 @@
   <a href="#how-it-works">How it works</a> |
   <a href="#roadmap">Roadmap</a> |
   <a href="#setup-wizard-and-companion-app">Setup wizard</a> |
+  <a href="#choosing-a-brain">Choosing a brain</a> |
   <a href="#security-model">Security</a> |
   <a href="#contributing">Contributing</a>
 </p>
@@ -137,10 +138,14 @@ Sensitive categories are defined in `dex.yaml` and can only be made stricter fro
 </details>
 
 <details>
-<summary><b>Phase 6: Multi-user and hardening</b></summary>
+<summary><b>Phase 6: Hardening and shared use</b></summary>
 
-- [ ] Authentication in front of the app and the API
-- [ ] Per-user memory isolation
+Dex is distributed on GitHub, so each user runs and owns their own server — this phase is about hardening a single install, not running a multi-tenant service.
+
+- [ ] One owner per install by default, with authentication in front of the app and the API
+- [ ] Optional extra accounts for household members
+- [ ] Invite codes only; open signup is never supported
+- [ ] Per-user memory isolation enforced at the database layer
 - [ ] Per-user privacy settings
 - [ ] Rate limiting and audit logging
 </details>
@@ -180,7 +185,9 @@ Sensitive categories are defined in `dex.yaml` and can only be made stricter fro
 | Local LLM (phase 8) | GPU with 8 GB VRAM | GPU with 12 GB+ VRAM | Or a machine with large unified memory |
 
 > [!NOTE]
-> The robot always needs a network path back to your server — it has no brain of its own. Taking it away from home means carrying a travel router that runs WireGuard so it can reach your server remotely. If you need Dex on the go, the phone app is the recommended body.
+> The robot always needs a network path back to your server — it has no brain of its own. For reaching your server from outside your home network, [Tailscale](https://tailscale.com/) is the recommended option: it needs no public IP and works behind CGNAT, which covers most home internet connections. Plain WireGuard works too, but needs either a public IP on your home connection or a small VPS to act as a relay.
+>
+> The phone app can connect over either one directly. The robot can't: an ESP32 has no VPN client to run, and Android doesn't share its VPN tunnel with hotspot clients, so tethering the robot off a phone won't reach it either. Taking the robot out of the house means carrying a small travel router (for example a GL.iNet running OpenWRT) that holds the tunnel itself. Because of that, the phone app is the recommended body for Dex on the go.
 
 ## Software stack
 
@@ -198,16 +205,19 @@ Sensitive categories are defined in `dex.yaml` and can only be made stricter fro
 ## Setup wizard and companion app
 
 <p align="center">
-  <img src="docs/assets/wizard.svg" alt="Dex setup wizard: six steps from flashing firmware to a privacy check" width="100%">
+  <img src="docs/assets/wizard.svg" alt="Dex setup wizard: six steps from first boot to a privacy summary" width="100%">
 </p>
 
-The goal is that someone who has never touched a terminal can get Dex running. The planned wizard walks through six steps: flash the firmware from the browser, connect Wi-Fi, pair with the home server using a short code, choose a brain, personalize Dex, and finish with a plain-language privacy check.
+The wizard is first-run configuration, not account creation. It runs once, right after you clone the repository and bring the server up, to get your own instance of Dex ready to use. The goal is that someone who has never touched a terminal can get Dex running. The planned wizard walks through six steps: detect the server and generate certificates, paste your own LLM API key, choose a brain, set privacy defaults, pair the robot, and personalize Dex. It ends with a plain-language privacy summary of what stays local and what may leave your network.
 
 **Why not use the official app?** M5Stack's StackChan World app is available on Google Play and the App Store, but it's built around an M5Stack account and the default cloud service, which Dex replaces. Some Samsung users have also reported login problems with the Android version. Dex's app talks only to your own server.
 
 **Why a web app first?** A progressive web app installs to the home screen on Samsung, other Android phones and iPhone, needs no app store, and ships from the same server as Dex core. Native Android and iOS builds can be wrapped from the same code later if they add real value, such as Bluetooth provisioning.
 
 ## Quick start
+
+> [!WARNING]
+> Do not expose the Dex server to the internet by forwarding its ports on your router — this is not a supported setup. It would put a microphone, your personal memory and your home network data within reach of anyone who finds the open port. Use [Tailscale](https://tailscale.com/) for remote access instead (see the [hardware](#hardware) note above).
 
 > [!IMPORTANT]
 > This is the **planned** setup flow. Commands will work once Phase 1 is complete.
@@ -269,6 +279,14 @@ skills:
     - pc_control
 ```
 
+## Choosing a brain
+
+Dex core talks to the LLM through a single OpenAI-compatible interface, so any provider that speaks that API works: Mistral, DeepSeek, Claude, or a model you run yourself with Ollama. Switching is a one-line change to `llm.default` in `dex.yaml` (see [Configuration](#configuration) above) — no code changes, no re-indexing memory.
+
+That flexibility stops at text. No text LLM can hear or speak, so speech-to-text and text-to-speech always run on your own server, whichever brain is answering. That's deliberate: it keeps your voice at home no matter which provider you pick for the "thinking" part.
+
+For the same reason, running STT or TTS on a rented VPS isn't recommended. It sends your raw audio off-site for the sake of a modest saving over buying a used mini PC to run them at home instead.
+
 ## Security model
 
 Dex has a microphone, knows a lot about you and can run tools, so it's treated as the most sensitive device in the house.
@@ -276,6 +294,8 @@ Dex has a microphone, knows a lot about you and can run tools, so it's treated a
 | Risk | Mitigation |
 | :-- | :-- |
 | API key extracted from the robot | Keys live only on the server in `.env`. The robot holds no secrets beyond Wi-Fi. |
+| Secrets committed to Git | `dex.yaml` and `.env` are gitignored; a `dex.example.yaml` with no real values is committed instead. A pre-commit hook plus CI secret scanning catch mistakes before they land. |
+| Insecure defaults left unchanged | The shipped example config defaults to strictest privacy, read-only skills and no machine control. There are no default passwords — credentials are generated on first boot and shown once. |
 | Robot used as a pivot into the home network | Robot sits on its own VLAN and can only reach the voice gateway port. |
 | Server exposed to the internet | No port forwarding. Remote access only through WireGuard or Tailscale. |
 | Prompt injection from web pages, feeds or emails | Tools are allowlisted and read-only by default. State-changing actions need a physical head-touch. |
